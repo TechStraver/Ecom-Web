@@ -21,7 +21,7 @@ def register_customer(db: Session, user_data: UserRegister):
         username=user_data.username,
         email=user_data.email,
         phone_number=user_data.phone_number,
-        password=user_data.password,  # RAW PASSWORD
+        password=user_data.password,  
         role=UserRole.CUSTOMER
     )
 
