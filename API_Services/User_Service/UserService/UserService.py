@@ -33,15 +33,16 @@ def login_user(db: Session, login_data: UserLogin):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    if login_data.password != user.password:  # RAW PASSWORD CHECK
+    if login_data.password != user.password:  
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     # FIX: Convert enum to string
     token = create_access_token({"sub": user.email, "role": user.role.value})
 
+    # New Changess done here
     return {
         "access_token": token,
         "token_type": "bearer",
         "user_id": user.id,
-        "role": user.role.value   # return string, not Enum
+        "role": user.role.value   
     }
