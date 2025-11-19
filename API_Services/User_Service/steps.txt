@@ -4,5 +4,6 @@ First Time when running the service
 2. venv/scripts/activate
 3. pip install -r requirements.txt
 4. pip freeze > reuirements.txt
-5. alembic revision --autogenerate -m "create initial tables"
-6. alembic upgrade head
+5. alembic init alembic
+6. alembic revision --autogenerate -m "create initial tables"
+7. alembic upgrade head
