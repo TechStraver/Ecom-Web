@@ -1,6 +1,6 @@
 # Services/UserService.py
 from sqlalchemy.orm import Session
-from fastapi import HTTPException
+from fastapi import HTTPException # type: ignore
 from Models.Models import UserRegister, UserLogin, User, UserRole
 from Repository_DataAcess.UserRepository import create_user, get_user_by_identifier, user_exists
 from Utils.Auth import create_access_token
