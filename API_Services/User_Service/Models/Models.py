@@ -2,6 +2,7 @@ from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from enum import Enum as PyEnum
 from Db.Database import Base
+from .BaseEntity import BaseEntity
 from sqlalchemy import Column, Integer, String, Enum, Boolean
 # Base schema
 class UserRole(PyEnum):
@@ -60,8 +61,9 @@ class UserResponse(BaseModel):
     class Config:
         orm_mode = True
 
-class User(Base):
+class User(Base,BaseEntity):
     __tablename__ = "users"
+    __table_args__ = {"schema": "admin"}
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     username = Column(String, unique=True, index=True, nullable=False)
@@ -69,6 +71,3 @@ class User(Base):
     phone_number = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
     role = Column(Enum(UserRole), nullable=False, default=UserRole.CUSTOMER)
-    is_active = Column(Boolean, default=True)
-
-
