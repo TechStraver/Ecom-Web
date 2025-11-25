@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+# from sqlalchemy import asc, desc
 from Model.ProductModel import Product
 
 def get_all_products(db: Session):
