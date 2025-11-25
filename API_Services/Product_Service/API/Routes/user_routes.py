@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, Depends, Query, Form, File, UploadFile, HTTPException
+from sqlalchemy.orm import Session
 from sqlalchemy.orm import Session
 from Db.Database import SessionLocal
 import base64
@@ -44,12 +45,28 @@ def save_product(
     return update_product_details(db, product_id, update_data, current_user_id, image)
 
 @router.get("/product/all")
-def get_all_products(db: Session = Depends(get_db)):
-    products = fetch_all_products(db)
-    result = []
-    for p in products:
+def get_all_products(
+    db: Session = Depends(get_db),
+    search: str | None = Query(None, description="Search by name or description"),
+    sort_by: str = Query("id", description="Field to sort by"),
+    sort_order: str = Query("asc", description="Sort order: asc or desc"),
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(10, ge=1, le=100, description="Items per page")
+):
+    result = fetch_all_products(
+        db=db,
+        search=search,
+        sort_by=sort_by,
+        sort_order=sort_order,
+        page=page,
+        page_size=page_size
+    )
+
+    # Convert image blobs to base64 for API response
+    items = []
+    for p in result["items"]:
         image_base64 = base64.b64encode(p.image_blob).decode() if p.image_blob else None
-        result.append({
+        items.append({
             "id": p.id,
             "name": p.name,
             "description": p.description,
@@ -59,8 +76,14 @@ def get_all_products(db: Session = Depends(get_db)):
             "image_filename": p.image_filename,
             "image_base64": image_base64
         })
-    return result
 
+    return {
+        "items": items,
+        "total": result["total"],
+        "page": result["page"],
+        "page_size": result["page_size"],
+        "pages": result["pages"]
+    }
 @router.delete("/product/delete/{product_id}")
 def delete_product_soft(product_id: int, current_user_id: int, db: Session = Depends(get_db)):
     return soft_delete_product_service(db, product_id, current_user_id)
