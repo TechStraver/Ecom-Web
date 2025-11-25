@@ -9,7 +9,7 @@ from Repository_DataAcess.ProductRepo import (
     get_all_products,
     get_product_by_id,
     update_product,
-    soft_delete_product
+    soft_delete_product,
 )
 
 PRODUCT_IMAGE_DIR = "Product_Catalog"
@@ -56,8 +56,30 @@ def add_product(db: Session, name: str, description: str, price: float, current_
 
     return create_product(db, product)
 
-def fetch_all_products(db: Session):
-    return get_all_products(db)
+def fetch_all_products(
+    db,
+    search: str | None = None,
+    sort_by: str = "id",
+    sort_order: str = "asc",
+    page: int = 1,
+    page_size: int = 10
+):
+    products, total = get_all_products(
+        db=db,
+        search=search,
+        sort_by=sort_by,
+        sort_order=sort_order,
+        page=page,
+        page_size=page_size
+    )
+
+    return {
+        "items": products,
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "pages": (total + page_size - 1) // page_size  # ceil division
+    }
 
 def update_product_details(db: Session, product_id: int, update_data: dict, current_user_id: int, image: UploadFile | None):
     product = get_product_by_id(db, product_id)
