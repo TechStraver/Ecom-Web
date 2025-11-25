@@ -7,3 +7,5 @@ First Time when running the service
 5. alembic init alembic
 6. alembic revision --autogenerate -m "create initial tables"
 7. alembic upgrade head
+8. uvicorn main:app --reload
+
